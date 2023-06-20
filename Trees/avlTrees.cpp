@@ -64,7 +64,7 @@ public:
                     temp = temp->rightChild;
                 }
                 }
-                int bf = getBalanceFactor(root->leftChild) - getBalanceFactor(right);
+                int bf = getBalanceFactor(root->leftChild) - getBalanceFactor(root->rightChild);
                 if(bf>1 && d<temp->leftChild->data){
                     return rightRotate(temp);
                 }
