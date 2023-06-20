@@ -1,5 +1,7 @@
 #include <iostream>
 #include <queue>
+#include <vector>
+#include <climits>
 using namespace std;
 
 // Weighted Adjacency Matrix
@@ -24,7 +26,7 @@ public:
                 i == j ? matrix[i][j] = 0 : matrix[i][j] = -1; // initializing with max weights
             }
         }
-        visited = new bool[this->n];
+        visited = new bool[n];
         cout << "Graph Created!\n";
     }
 
@@ -112,11 +114,42 @@ public:
         visited[s] = true;
         for (int i = 0; i < n; i++)
         {
-            if (matrix[i][s] != -1 && !visited[i])
+            if (matrix[s][i] != -1 && !visited[i])
             {
-                dfs(i, visited);
+                dfs(i,visited);
             }
         }
+    }
+
+    //Finding the Minimum Spanning Tree using Prims Algorithm
+    int MST(){
+        vector<int>weight(n,INT_MAX); //weighing infinity
+        bool checked[n]; int result = 0;
+        weight[0] = 0;
+        int u;
+        for (int i = 0; i < n; i++)
+        {
+            u = -1;  //min weight vertex
+            for (int j = 0; j < n; j++)
+            {
+             if(!checked[j] && u==-1 || weight[j]<u){
+                u = j;
+             }
+             checked[u] = true;
+             result+=weight[u];
+
+             for (int k = 0; i < n; k++)
+             {
+                if(matrix[k][u]!=-1 && !checked[k]){
+                    weight[k] = min(weight[k],matrix[u][k]);
+                }
+             }
+             
+            }
+            
+        }
+        return result;
+        
     }
 
     ~AdjMatrix()
@@ -163,7 +196,9 @@ int main()
                 int s;
                 cout << "Enter Source\n";
                 cin >> s;
-                graph.dfs(s, graph.visited);
+                graph.dfs(s,graph.visited);
+                graph.visited = new bool[false]; 
+                cout<<endl;
                 break;
              case 0:
                 run = false;
@@ -187,6 +222,13 @@ int main()
                 break;
             case 4:
                 graph.bfs();
+                break;
+            case 5:
+                int s;
+                cout << "Enter Source\n";
+                cin >> s;
+                graph.dfs(s,graph.visited);
+                cout<<endl;
                 break;
             default:
                 break;
