@@ -5,39 +5,32 @@
 using namespace std;
 
 // Weighted Adjacency Matrix
-class AdjMatrix
+class AdjList
 {
 private:
-    int **matrix;
+    vector<int> *list;
     int n;
     public:
     bool *visited;
 
 public:
-    AdjMatrix(int n)
+    AdjList(int n)
     {
         this->n = n;
-        matrix = new int *[n];
-        for (int i = 0; i < n; i++)
-        { // 0 1 2 3 4
-            matrix[i] = new int[n];
-            for (int j = 0; j < n; j++)
-            {
-                i == j ? matrix[i][j] = 0 : matrix[i][j] = -1; // initializing with max weights
-            }
-        }
+        list = new vector<int>[n];
         visited = new bool[n];
         cout << "Graph Created!\n";
     }
 
     void printGraph()
     {
-        cout << "Adjacency Matrix\n";
+        cout << "Adjacency List\n";
         for (int i = 0; i < n; i++)
         {
-            for (int j = 0; j < n; j++)
+            cout<<"Vertex "<<i<<" : ";
+            for (auto j: list[i])
             {
-                cout << matrix[i][j] << " ";
+                cout<<" -> "<<j;
             }
             cout << endl;
         }
@@ -46,19 +39,19 @@ public:
     void addEdgeUD()
     {
         int s, d, w;
-        cout << "Enter Source, Destination, and weight respectively\n";
+        cout << "Enter Source, and Destination respectively\n";
         cin >> s >> d >> w;
-        matrix[s][d] = w;
-        matrix[d][s] = w;
+        list[s].push_back(d);
+        list[d].push_back(s);
         cout << "Edge Added!\n";
     }
 
     void addEdgeD()
     {
         int s, d, w;
-        cout << "Enter Source, Destination, and weight respectively\n";
-        cin >> s >> d >> w;
-        matrix[s][d] = w;
+        cout << "Enter Source, and Destination respectively\n";
+        cin >> s >> d;
+        list[s].push_back(d);
         cout << "Edge Added!\n";
     }
 
@@ -66,10 +59,18 @@ public:
     {
         int s, d;
         cout << "Enter Source, and Destination respectively\n";
-        cin >> s >> d;
-        matrix[s][d] = -1;
-        matrix[d][s] = -1;
+        cin>>s>>d;
+        for(auto i = list[s].begin(); i<list[s].end() ; i++){
+            if(*i==d){
+                list[s].erase(i);
+            }
+            for(auto i = list[d].begin(); i<list[d].end() ; i++){
+            if(*i==s){
+                list[d].erase(i);
+            }
+        }
         cout << "Edge Removed!\n";
+    }
     }
 
     void removeEdgeD()
@@ -77,7 +78,7 @@ public:
         int s, d;
         cout << "Enter Source, and Destination respectively\n";
         cin >> s >> d;
-        matrix[s][d] = -1;
+        //list[s].erase(d);
         cout << "Edge Removed!\n";
     }
 
@@ -96,9 +97,9 @@ public:
             int vrtx = q.front();
             cout << vrtx << " ";
             q.pop();
-            for (int i = 0; i < n; i++)
+            for (auto i: list[vrtx])
             {
-                if (matrix[vrtx][i] != -1 && !visited[i])
+                if (!visited[i])
                 {
                     q.push(i);
                     visited[i] = true;
@@ -112,9 +113,9 @@ public:
     {
         cout << s << " ";
         visited[s] = true;
-        for (int i = 0; i < n; i++)
+        for (auto i:list[s])
         {
-            if (matrix[s][i] != -1 && !visited[i])
+            if (!visited[i])
             {
                 dfs(i,visited);
             }
@@ -140,9 +141,9 @@ public:
 
              for (int k = 0; i < n; k++)
              {
-                if(matrix[k][u]!=-1 && !checked[k]){
-                    weight[k] = min(weight[k],matrix[u][k]);
-                }
+                // if(matrix[k][u]!=-1 && !checked[k]){
+                //     weight[k] = min(weight[k],matrix[u][k]);
+               // }
              }
              
             }
@@ -152,13 +153,9 @@ public:
         
     }
 
-    ~AdjMatrix()
+    ~AdjList()
     {
-        for (int i = 0; i < n; i++)
-        {
-            delete[] matrix[i];
-        }
-        delete[] matrix;
+        delete[] list;
     }
 };
 
@@ -170,7 +167,7 @@ int main()
     cin >> mode;
     cout << "Enter Number of Vertices for Graph\n";
     cin >> v;
-    AdjMatrix graph(v);
+    AdjList graph(v);
     while (run)
     {
         cout << "1) Print 2) Add Edge 3) Remove Edge 4) BFS 5) DFS 0) Exit\n";
